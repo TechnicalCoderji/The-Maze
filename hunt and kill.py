@@ -94,7 +94,14 @@ def remove_walls(current, next):
         next.walls['top'] = False 
 
 # Show Percentage at Top-Center
+def show_percentage():
+    filled_cells = len([cell for cell in grid_cells if cell.visited])
+    percentage = (filled_cells/TOTAL_CELLS)*100
+    per_string = f"{percentage:.2f}%"
+    pygame.draw.rect(sc,(0,0,0),(420,0,100,30))
 
+    fps_text = font.render(per_string, True, (255,255,255))
+    sc.blit(fps_text, (425, 5))
 
 # Initialize The Maze grid
 grid_cells = [Cell(col, row) for row in range(rows) for col in range(cols)]
@@ -125,7 +132,7 @@ def main():
         visted_cell.append(current_cell)
         current_cell.draw_current_cell()
 
-        
+        show_percentage()
 
         # Hunt and Kill Algorithm Logic
         next_cell = current_cell.check_neighbors()
@@ -160,4 +167,5 @@ with open(file_path, 'w') as json_file:
 
 # for exit Pygame and command window
 pygame.quit()
+
 sys.exit()
