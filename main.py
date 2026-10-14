@@ -1,0 +1,196 @@
+import pygame
+from maze import Grid
+from tools import ToolButton, FileBrowserBox, InputBox, blit_text
+
+pygame.init()
+
+# For Screen/Window Basic
+WIDTH = 1000
+HEIGHT = 600
+RES = WIDTH,HEIGHT
+win = pygame.display.set_mode(RES)
+pygame.display.set_caption("The Maze - Dip Parmar")
+clock = pygame.time.Clock()
+FPS = 60
+
+# Global Variables
+save_load_screen = None
+
+# Global Variables
+font_small_mini = pygame.font.Font(None, 25)
+font_small = pygame.font.Font(None, 45)
+font_medium = pygame.font.Font(None, 55)
+
+# Define a color with an alpha value (RGBA)
+transparent_color = (0, 0, 0, 150)  # RGB Color with 50% transparency
+
+# Create a surface with transparency
+transparent_surface = pygame.Surface((WIDTH,HEIGHT), pygame.SRCALPHA)
+transparent_surface.fill(transparent_color)
+
+# Colors
+BG_Color = (50, 50, 50)
+TOOL_Bar_Color = (100, 140, 200)
+MAZE_Box_Border_Color = (97, 136, 199)
+
+# Maze Varibles
+
+# tile size range from 10 t0 50
+grid_obj = Grid(25, 25, 800, 550, 50, MAZE_Box_Border_Color)
+
+def save_menu_fun():
+    global save_load_screen
+    save_load_screen = "save"
+
+def open_menu_fun():
+    global save_load_screen
+    save_load_screen = "open"
+
+def delete_menu_fun():
+    print("Delete Menu Function Called")
+
+def demo_menu_fun():
+    print("Demo Menu Function Called")
+
+# For Close Mini-Window of Save-Load Screen
+def close_fun():
+    global save_load_screen
+    save_load_screen = None
+
+# For Finally Save The File
+def save_fun():
+    global save_load_screen
+    # SL.save_sudoku(input_box.text,GameBoard.board)
+    save_load_screen = None
+    filelist_box.update()
+
+# For Finally Open The File
+def open_fun():
+    global save_load_screen
+    # SL.load_sudoku(filelist_box.selected_file,GameBoard.board)
+    save_load_screen = None
+
+# For Load
+close_button_1 = ToolButton(600,105,40,40,"img\\close.png","Close",close_fun)
+open_button = ToolButton(470,430,60,60,"img\\folder.png","Open",open_fun)
+filelist_box = FileBrowserBox(370,180,260,240,"MazeGrids")
+
+# For Save
+close_button = ToolButton(600,205,40,40,"img\\close.png","Close",close_fun)
+input_box = InputBox(370,280,260,40,"MyMaze")
+save_button = ToolButton(470,330,60,60,"img\\diskette.png","Save",save_fun)
+
+tool_buttons = [] # For Tool Button List
+
+# Row - 1 
+# Save Tool Button
+tool_buttons.append(ToolButton(860,35,50,50,"img\\diskette.png","Save",save_menu_fun))
+# Open Tool Button
+tool_buttons.append(ToolButton(920,35,50,50,"img\\folder.png","Open",open_menu_fun))
+
+# Row - 2
+# Delete Tool Buttom
+tool_buttons.append(ToolButton(860,95,50,50,"img\\delete.png","Delete",delete_menu_fun))
+
+# Row - 3
+# Demo Tool Button
+tool_buttons.append(ToolButton(860,155,50,50,"img\\undo.png","Demo",demo_menu_fun))
+# Demo Tool Button
+tool_buttons.append(ToolButton(920,155,50,50,"img\\undo.png","Demo",demo_menu_fun))
+
+# Row - 4
+# Demo Tool Button
+tool_buttons.append(ToolButton(860,215,50,50,"img\\undo.png","Demo",demo_menu_fun))
+# Demo Tool Button
+tool_buttons.append(ToolButton(920,215,50,50,"img\\undo.png","Demo",demo_menu_fun))
+
+def draw_win(sc: pygame.Surface):
+    # For Background Color
+    sc.fill(BG_Color)        
+
+    # Main Maze Grid
+    grid_obj.draw(sc)
+
+    # For Tool Bar
+    pygame.draw.rect(sc, TOOL_Bar_Color, (850, 25, 130, 490), 0, 10)
+
+    # For Tools Button
+    for button in tool_buttons:
+        button.draw(win)
+
+    # For Tool Bar Text
+    blit_text(win,"Tools",(865,530),font_medium,(255,255,255))
+
+    if save_load_screen:
+        # For Transparent Background
+        win.blit(transparent_surface,(0,0))
+
+        if save_load_screen == "save":
+            # For Background Box
+            pygame.draw.rect(win,(50,50,50),(350,200,300,200),0,20)
+            pygame.draw.rect(win,(200,200,200),(350,200,300,200),5,20)
+            pygame.draw.rect(win,(100,100,100),(350,200,300,50),0,border_top_left_radius=20,border_top_right_radius=20)
+
+            blit_text(win,"Save Menu",(365,215),font_small,(255,255,255))
+            blit_text(win,"Enter File Name:",(375,260),font_small_mini,(220,220,220))
+            # For Input Box Draw
+            input_box.draw(win)
+            close_button.draw(win) # For Close Button Draw on Screen
+            save_button.draw(win) # For Save Button Draw
+
+        else:
+            # For Background Box
+            pygame.draw.rect(win,(50,50,50),(350,100,300,400),0,20)
+            pygame.draw.rect(win,(200,200,200),(350,100,300,400),5,20)
+            pygame.draw.rect(win,(100,100,100),(350,100,300,50),0,border_top_left_radius=20,border_top_right_radius=20)
+            
+            blit_text(win,"Open Menu",(365,115),font_small,(255,255,255))
+            blit_text(win,"Select File To Open:",(375,160),font_small_mini,(220,220,220))
+
+            close_button_1.draw(win) # For Close Button Draw on Screen
+            filelist_box.draw(win)
+            open_button.draw(win)
+
+def handle_events(event: pygame.event.Event):
+
+    if save_load_screen:
+        if save_load_screen == "save":
+            close_button.handle_event(event)
+            save_button.handle_event(event)
+            input_box.handle_event(event)
+
+        else:
+            close_button_1.handle_event(event)
+            open_button.handle_event(event)
+            filelist_box.handle_event(event)
+
+    else: 
+
+        # For Tool Button Events
+        for button in tool_buttons:
+            button.handle_event(event)
+
+def main():
+
+    # For Gameloop
+    while True:
+
+        # For Event Handling
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+
+            # For Handling Maze Events
+            handle_events(event)
+
+        # For Drawing Maze On Window
+        draw_win(win)
+
+        # For Update Display
+        pygame.display.flip()
+        clock.tick(FPS)
+
+if __name__=="__main__":
+    main()
+    pygame.quit()
+    exit()
