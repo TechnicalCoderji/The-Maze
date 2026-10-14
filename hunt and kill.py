@@ -5,10 +5,10 @@ import json
 
 # Set-up screen Size and grid varibles
 RES = WIDTH, HEIGHT = 900,600
-TILE = 60
+TILE = 54
 cols, rows = WIDTH // TILE, HEIGHT // TILE
 TOTAL_CELLS = cols * rows
-FPS = 60
+FPS = 0
 
 # Set-up Pygame Basic GUI code
 pygame.init()
@@ -156,14 +156,35 @@ def main():
 main()
 
 # Code for save Maze data as json file
-maze_array = [{'x': cell.x, 'y': cell.y, 'walls': cell.walls} for cell in grid_cells]
-# print(maze_array)
+grid = [[0 for _ in range(cols)] for _ in range(rows)]
 
-file_path = 'walls_data.json'
+for cell in grid_cells:
+    bitmask = 0
+
+    walls = cell.walls
+
+    if walls['top']:
+        bitmask |= 1  # Top wall
+    if walls['right']:
+        bitmask |= 2  # Right wall
+    if walls['bottom']:
+        bitmask |= 4  # Bottom wall
+    if walls['left']:
+        bitmask |= 8  # Left wall
+
+    grid[cell.y][cell.x] = bitmask
+
+maze_array = {
+    "rows": rows,
+    "cols": cols,
+    "grid": grid
+}
+
+file_path = 'MazeGrids/maze9.json'
 
 # Save the dictionary to a file
-with open(file_path, 'w') as json_file:
-    json.dump(maze_array, json_file)
+with open(file_path, 'w') as f:
+    json.dump(maze_array, f)
 
 # for exit Pygame and command window
 pygame.quit()
