@@ -1,6 +1,8 @@
 import pygame
 from maze import Grid
 from tools import ToolButton, FileBrowserBox, InputBox, blit_text
+import saver_loader as SL
+from algoritm import depth_first_search
 
 pygame.init()
 
@@ -35,8 +37,9 @@ MAZE_Box_Border_Color = (97, 136, 199)
 
 # Maze Varibles
 
-# tile size range from 10 t0 50
-grid_obj = Grid(25, 25, 800, 550, 50, MAZE_Box_Border_Color)
+# tile size range from 10 to 50 (10,25,50)
+Tile_Size = 50
+grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
 def save_menu_fun():
     global save_load_screen
@@ -46,10 +49,17 @@ def open_menu_fun():
     global save_load_screen
     save_load_screen = "open"
 
-def delete_menu_fun():
-    print("Delete Menu Function Called")
+def delete_fun():
+    global grid_obj
+    grid_obj.algo_is_running = False
+    grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
-def demo_menu_fun():
+def DFS_fun():
+    global grid_obj
+    grid_obj.algo_is_running = True
+    grid_obj.algorithm = depth_first_search
+
+def demo_fun():
     print("Demo Menu Function Called")
 
 # For Close Mini-Window of Save-Load Screen
@@ -60,14 +70,14 @@ def close_fun():
 # For Finally Save The File
 def save_fun():
     global save_load_screen
-    # SL.save_sudoku(input_box.text,GameBoard.board)
+    SL.save_sudoku(input_box.text, grid_obj)
     save_load_screen = None
     filelist_box.update()
 
 # For Finally Open The File
 def open_fun():
     global save_load_screen
-    # SL.load_sudoku(filelist_box.selected_file,GameBoard.board)
+    SL.load_sudoku(filelist_box.selected_file, grid_obj)
     save_load_screen = None
 
 # For Load
@@ -90,19 +100,19 @@ tool_buttons.append(ToolButton(920,35,50,50,"img\\folder.png","Open",open_menu_f
 
 # Row - 2
 # Delete Tool Buttom
-tool_buttons.append(ToolButton(860,95,50,50,"img\\delete.png","Delete",delete_menu_fun))
+tool_buttons.append(ToolButton(860,95,50,50,"img\\delete.png","Delete",delete_fun))
 
 # Row - 3
-# Demo Tool Button
-tool_buttons.append(ToolButton(860,155,50,50,"img\\undo.png","Demo",demo_menu_fun))
-# Demo Tool Button
-tool_buttons.append(ToolButton(920,155,50,50,"img\\undo.png","Demo",demo_menu_fun))
+# DFS Tool Button
+tool_buttons.append(ToolButton(860,155,50,50,"img\\DFS.png","DFS",DFS_fun))
+# Hunt and Kill Tool Button
+tool_buttons.append(ToolButton(920,155,50,50,"img\\HuntAndKill.png","Hunt & Kill",demo_fun))
 
 # Row - 4
 # Demo Tool Button
-tool_buttons.append(ToolButton(860,215,50,50,"img\\undo.png","Demo",demo_menu_fun))
+tool_buttons.append(ToolButton(860,215,50,50,"img\\undo.png","Demo",demo_fun))
 # Demo Tool Button
-tool_buttons.append(ToolButton(920,215,50,50,"img\\undo.png","Demo",demo_menu_fun))
+tool_buttons.append(ToolButton(920,215,50,50,"img\\undo.png","Demo",demo_fun))
 
 def draw_win(sc: pygame.Surface):
     # For Background Color
