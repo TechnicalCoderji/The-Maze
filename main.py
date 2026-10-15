@@ -2,7 +2,7 @@ import pygame
 from maze import Grid
 from tools import ToolButton, FileBrowserBox, InputBox, blit_text
 import saver_loader as SL
-from algoritm import depth_first_search
+from algoritm import depth_first_search, hunt_and_kill
 
 pygame.init()
 
@@ -41,6 +41,12 @@ MAZE_Box_Border_Color = (97, 136, 199)
 Tile_Size = 50
 grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
+# Algorithm Function Mapping
+gen_algorithm_map = {
+    "DFS": depth_first_search,  # Depth-First Search Algorithm
+    "HAK": hunt_and_kill        # Hunt and Kill Algorithm
+}
+
 def save_menu_fun():
     global save_load_screen
     save_load_screen = "save"
@@ -54,10 +60,40 @@ def delete_fun():
     grid_obj.algo_is_running = False
     grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
-def DFS_fun():
+def gen_algorithm_fun(algorithm_name):
     global grid_obj
     grid_obj.algo_is_running = True
-    grid_obj.algorithm = depth_first_search
+    grid_obj.algorithm = gen_algorithm_map.get(algorithm_name)
+
+def expand_menu_fun():
+    global Tile_Size
+
+    if Tile_Size == 10:
+        Tile_Size = 25
+        delete_fun()
+
+    elif Tile_Size == 25:
+        Tile_Size = 50
+        delete_fun()
+
+    else:
+        print("Out of range")
+    
+
+def shrink_menu_fun():
+    global Tile_Size
+
+    if Tile_Size == 50:
+        Tile_Size = 25
+        delete_fun()
+        
+    elif Tile_Size == 25:
+        Tile_Size = 10
+        delete_fun()
+
+    else:
+        print("Out of range")
+
 
 def demo_fun():
     print("Demo Menu Function Called")
@@ -103,16 +139,22 @@ tool_buttons.append(ToolButton(920,35,50,50,"img\\folder.png","Open",open_menu_f
 tool_buttons.append(ToolButton(860,95,50,50,"img\\delete.png","Delete",delete_fun))
 
 # Row - 3
-# DFS Tool Button
-tool_buttons.append(ToolButton(860,155,50,50,"img\\DFS.png","DFS",DFS_fun))
-# Hunt and Kill Tool Button
-tool_buttons.append(ToolButton(920,155,50,50,"img\\HuntAndKill.png","Hunt & Kill",demo_fun))
+# Zoom In Tool Button
+tool_buttons.append(ToolButton(860,155,50,50,"img\\zoom-in.png","Expand",expand_menu_fun))
+# Zoom Out Tool Button
+tool_buttons.append(ToolButton(920,155,50,50,"img\\zoom-out.png","Shrink",shrink_menu_fun))
 
 # Row - 4
+# DFS Tool Button
+tool_buttons.append(ToolButton(860,215,50,50,"img\\DFS.png","DFS",lambda: gen_algorithm_fun("DFS")))
+# Hunt and Kill Tool Button
+tool_buttons.append(ToolButton(920,215,50,50,"img\\HuntAndKill.png","Hunt & Kill",lambda: gen_algorithm_fun("HAK")))
+
+# Row - 5
 # Demo Tool Button
-tool_buttons.append(ToolButton(860,215,50,50,"img\\undo.png","Demo",demo_fun))
+tool_buttons.append(ToolButton(860,275,50,50,"img\\undo.png","Demo",demo_fun))
 # Demo Tool Button
-tool_buttons.append(ToolButton(920,215,50,50,"img\\undo.png","Demo",demo_fun))
+tool_buttons.append(ToolButton(920,275,50,50,"img\\undo.png","Demo",demo_fun))
 
 def draw_win(sc: pygame.Surface):
     # For Background Color
