@@ -20,6 +20,7 @@ save_load_screen = None
 
 # Global Variables
 font_small_mini = pygame.font.Font(None, 25)
+font_small_medium = pygame.font.Font(None, 33)
 font_small = pygame.font.Font(None, 45)
 font_medium = pygame.font.Font(None, 55)
 
@@ -33,6 +34,7 @@ transparent_surface.fill(transparent_color)
 # Colors
 BG_Color = (50, 50, 50)
 TOOL_Bar_Color = (100, 140, 200)
+TOOL_Bar_Mid_Color = (37, 76, 139)
 MAZE_Box_Border_Color = (97, 136, 199)
 
 # Maze Varibles
@@ -60,6 +62,10 @@ def delete_fun():
     grid_obj.algo_is_running = False
     grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
+def reset_fun():
+    # For Reset Solved Path by Solving Algoritm also Stop Solving Algorithm
+    print("Reset Function Called.")
+
 def gen_algorithm_fun(algorithm_name):
     global grid_obj
     grid_obj.algo_is_running = True
@@ -86,7 +92,7 @@ def shrink_menu_fun():
     if Tile_Size == 50:
         Tile_Size = 25
         delete_fun()
-        
+
     elif Tile_Size == 25:
         Tile_Size = 10
         delete_fun()
@@ -130,31 +136,45 @@ tool_buttons = [] # For Tool Button List
 
 # Row - 1 
 # Save Tool Button
-tool_buttons.append(ToolButton(860,35,50,50,"img\\diskette.png","Save",save_menu_fun))
+tool_buttons.append(ToolButton(860,70,50,50,"img\\diskette.png","Save",save_menu_fun))
 # Open Tool Button
-tool_buttons.append(ToolButton(920,35,50,50,"img\\folder.png","Open",open_menu_fun))
+tool_buttons.append(ToolButton(920,70,50,50,"img\\folder.png","Open",open_menu_fun))
 
 # Row - 2
-# Delete Tool Buttom
-tool_buttons.append(ToolButton(860,95,50,50,"img\\delete.png","Delete",delete_fun))
+# Delete Tool Button
+tool_buttons.append(ToolButton(860,130,50,50,"img\\delete.png","Delete",delete_fun))
+# Reset Tool Button
+tool_buttons.append(ToolButton(920,130,50,50,"img\\reset.png","Reset",reset_fun))
 
 # Row - 3
 # Zoom In Tool Button
-tool_buttons.append(ToolButton(860,155,50,50,"img\\zoom-in.png","Expand",expand_menu_fun))
+tool_buttons.append(ToolButton(860,190,50,50,"img\\zoom-in.png","Expand",expand_menu_fun))
 # Zoom Out Tool Button
-tool_buttons.append(ToolButton(920,155,50,50,"img\\zoom-out.png","Shrink",shrink_menu_fun))
+tool_buttons.append(ToolButton(920,190,50,50,"img\\zoom-out.png","Shrink",shrink_menu_fun))
 
 # Row - 4
 # DFS Tool Button
-tool_buttons.append(ToolButton(860,215,50,50,"img\\DFS.png","DFS",lambda: gen_algorithm_fun("DFS")))
+tool_buttons.append(ToolButton(860,290,50,50,"img\\DFS.png","DFS",lambda: gen_algorithm_fun("DFS")))
 # Hunt and Kill Tool Button
-tool_buttons.append(ToolButton(920,215,50,50,"img\\HuntAndKill.png","Hunt & Kill",lambda: gen_algorithm_fun("HAK")))
+tool_buttons.append(ToolButton(920,290,50,50,"img\\HuntAndKill.png","Hunt & Kill",lambda: gen_algorithm_fun("HAK")))
 
 # Row - 5
 # Demo Tool Button
-tool_buttons.append(ToolButton(860,275,50,50,"img\\undo.png","Demo",demo_fun))
+tool_buttons.append(ToolButton(860,395,50,50,"img\\undo.png","Demo",demo_fun))
 # Demo Tool Button
-tool_buttons.append(ToolButton(920,275,50,50,"img\\undo.png","Demo",demo_fun))
+tool_buttons.append(ToolButton(920,395,50,50,"img\\undo.png","Demo",demo_fun))
+
+# Row - 6
+# Demo Tool Button
+tool_buttons.append(ToolButton(860,455,50,50,"img\\undo.png","Demo",demo_fun))
+# Demo Tool Button
+tool_buttons.append(ToolButton(920,455,50,50,"img\\undo.png","Demo",demo_fun))
+
+# Row - 7
+# Demo Tool Button
+tool_buttons.append(ToolButton(860,515,50,50,"img\\undo.png","Demo",demo_fun))
+# Demo Tool Button
+tool_buttons.append(ToolButton(920,515,50,50,"img\\undo.png","Demo",demo_fun))
 
 def draw_win(sc: pygame.Surface):
     # For Background Color
@@ -164,14 +184,18 @@ def draw_win(sc: pygame.Surface):
     grid_obj.draw(sc)
 
     # For Tool Bar
-    pygame.draw.rect(sc, TOOL_Bar_Color, (850, 25, 130, 490), 0, 10)
+    pygame.draw.rect(sc, TOOL_Bar_Color, (850, 25, 130, 550), 0, 10)
+    # For Middle Differen Tool Bar BG For Generation Algorithm
+    pygame.draw.rect(sc, TOOL_Bar_Mid_Color, (850, 250, 130, 100), 0, 10)
+
+    # For Tool Bar Text
+    blit_text(win,"Tools",(875,35),font_small,(255,255,255))
+    blit_text(win,"Generator",(860,260),font_small_medium,(255,255,255))
+    blit_text(win,"Solver",(870,360),font_small,(255,255,255))
 
     # For Tools Button
     for button in tool_buttons:
         button.draw(win)
-
-    # For Tool Bar Text
-    blit_text(win,"Tools",(865,530),font_medium,(255,255,255))
 
     if save_load_screen:
         # For Transparent Background

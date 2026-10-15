@@ -8,6 +8,11 @@ def save_sudoku(file_name, maze_grid):
     # making JSON file from maze_grid
     grid = [[0 for _ in range(maze_grid.cols)] for _ in range(maze_grid.rows)]
 
+    WALL_TOP = 1
+    WALL_RIGHT = 2
+    WALL_BOTTOM = 4
+    WALL_LEFT = 8
+
     for rows in maze_grid.grid:
         for cell in rows:
             bitmask = 0
@@ -15,13 +20,13 @@ def save_sudoku(file_name, maze_grid):
             walls = cell.walls
 
             if walls['top']:
-                bitmask |= 1  # Top wall
+                bitmask |= WALL_TOP     # Top wall
             if walls['right']:
-                bitmask |= 2  # Right wall
+                bitmask |= WALL_RIGHT   # Right wall
             if walls['bottom']:
-                bitmask |= 4  # Bottom wall
+                bitmask |= WALL_BOTTOM  # Bottom wall
             if walls['left']:
-                bitmask |= 8  # Left wall
+                bitmask |= WALL_LEFT    # Left wall
 
             grid[cell.row][cell.column] = bitmask
 
@@ -47,6 +52,12 @@ def load_sudoku(file_name, maze_grid):
 
     rows = maze_data["rows"]
     cols = maze_data["cols"]
+
+    # Add Validation For Row and Column Compatable with Maze Grid
+    if not (rows == maze_grid.rows and cols == maze_grid.cols):
+        print("Error: Grid Size Not Compatable.")
+        return
+
     grid_bitmask = maze_data["grid"]
 
     WALL_TOP = 1
