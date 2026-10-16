@@ -59,17 +59,19 @@ def open_menu_fun():
 
 def delete_fun():
     global grid_obj
-    grid_obj.algo_is_running = False
+    grid_obj.gen_algo_is_running = False
+    grid_obj.is_maze_Generated = False
     grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
+# For Reset Solved Path by Solving Algoritm also Stop Solving Algorithm
 def reset_fun():
-    # For Reset Solved Path by Solving Algoritm also Stop Solving Algorithm
+    grid_obj.reset_solve()
     print("Reset Function Called.")
 
 def gen_algorithm_fun(algorithm_name):
     global grid_obj
-    grid_obj.algo_is_running = True
-    grid_obj.algorithm = gen_algorithm_map.get(algorithm_name)
+    grid_obj.gen_algo_is_running = True
+    grid_obj.gen_algorithm = gen_algorithm_map.get(algorithm_name)
 
 def expand_menu_fun():
     global Tile_Size
@@ -119,8 +121,10 @@ def save_fun():
 # For Finally Open The File
 def open_fun():
     global save_load_screen
+    delete_fun()
     SL.load_sudoku(filelist_box.selected_file, grid_obj)
     save_load_screen = None
+    grid_obj.is_maze_Generated = True
 
 # For Load
 close_button_1 = ToolButton(600,105,40,40,"img\\close.png","Close",close_fun)
@@ -228,6 +232,8 @@ def draw_win(sc: pygame.Surface):
             open_button.draw(win)
 
 def handle_events(event: pygame.event.Event):
+
+    grid_obj.handle_events(event)
 
     if save_load_screen:
         if save_load_screen == "save":

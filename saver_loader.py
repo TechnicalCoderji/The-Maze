@@ -13,7 +13,7 @@ def save_sudoku(file_name, maze_grid):
     WALL_BOTTOM = 4
     WALL_LEFT = 8
 
-    for rows in maze_grid.grid:
+    for rows in maze_grid.cell_grid:
         for cell in rows:
             bitmask = 0
 
@@ -75,8 +75,8 @@ def load_sudoku(file_name, maze_grid):
                 'left': bool(bitmask & WALL_LEFT)
             }
 
-            maze_grid.grid[y][x].walls = walls
-            maze_grid.grid[y][x].visited = True  # Mark the cell as visited after loading
+            maze_grid.cell_grid[y][x].walls = walls
+            maze_grid.cell_grid[y][x].visited = True  # Mark the cell as visited after loading
 
 if __name__=="__main__":
     pass

@@ -51,7 +51,7 @@ def hunt_and_kill(maze_grid: Grid):
         return True
 
     else:
-        for row in maze_grid.grid:
+        for row in maze_grid.cell_grid:
             for cell in row:
                 if not cell.visited:
                     continue
@@ -64,3 +64,12 @@ def hunt_and_kill(maze_grid: Grid):
                     return True
         
         return False
+
+# --------------- Maze Generation Algorithm ---------------
+
+# Random Mouse Algorithm
+# Dead-End Fill Algorithm
+# Right Hand (Hand Follower) Algorithm
+# Left Hand (Hand Follower) Algorithm
+# A star Algorithm
+# Dijkstra Algorithm
