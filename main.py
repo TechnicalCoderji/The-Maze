@@ -2,7 +2,11 @@ import pygame
 from maze import Grid
 from tools import ToolButton, FileBrowserBox, InputBox, blit_text
 import saver_loader as SL
+
+# Import Maze Generation Algorithm
 from algoritm import depth_first_search, hunt_and_kill
+# Import Maze Solver Algorithm
+from algoritm import random_mouse, dead_end_fill, right_hand_follower, left_hand_follower, a_star, dijkstra
 
 pygame.init()
 
@@ -45,8 +49,17 @@ grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
 # Algorithm Function Mapping
 gen_algorithm_map = {
-    "DFS": depth_first_search,  # Depth-First Search Algorithm
-    "HAK": hunt_and_kill        # Hunt and Kill Algorithm
+    "DFS": depth_first_search,  # Depth-First Search
+    "HAK": hunt_and_kill        # Hunt and Kill
+}
+
+solve_algorithm_map = {
+    "RMA": random_mouse,            # Random Mouse
+    "DEF": dead_end_fill,           # Dead-End Fill
+    "RHF": right_hand_follower,     # Right-Hand Follower
+    "LHF": left_hand_follower,      # Left-Hand Follower
+    "AS": a_star,                   # A Star
+    "DA": dijkstra                  # Dijkstra
 }
 
 def save_menu_fun():
@@ -72,6 +85,16 @@ def gen_algorithm_fun(algorithm_name):
     global grid_obj
     grid_obj.gen_algo_is_running = True
     grid_obj.gen_algorithm = gen_algorithm_map.get(algorithm_name)
+
+def solve_algorithm_fun(algorithm_name):
+    global grid_obj
+
+    if grid_obj.is_maze_Generated:
+        grid_obj.solve_algo_is_running = True
+        grid_obj.solve_algorithm = solve_algorithm_map.get(algorithm_name)
+
+    else:
+        print("Generate or Load Maze First")
 
 def expand_menu_fun():
     global Tile_Size
@@ -160,25 +183,25 @@ tool_buttons.append(ToolButton(920,190,50,50,"img\\zoom-out.png","Shrink",shrink
 # DFS Tool Button
 tool_buttons.append(ToolButton(860,290,50,50,"img\\DFS.png","DFS",lambda: gen_algorithm_fun("DFS")))
 # Hunt and Kill Tool Button
-tool_buttons.append(ToolButton(920,290,50,50,"img\\HuntAndKill.png","Hunt & Kill",lambda: gen_algorithm_fun("HAK")))
+tool_buttons.append(ToolButton(920,290,50,50,"img\\huntandkill.png","Hunt & Kill",lambda: gen_algorithm_fun("HAK")))
 
 # Row - 5
-# Demo Tool Button
-tool_buttons.append(ToolButton(860,395,50,50,"img\\undo.png","Demo",demo_fun))
-# Demo Tool Button
-tool_buttons.append(ToolButton(920,395,50,50,"img\\undo.png","Demo",demo_fun))
+# Random Mouse Algorithm Button
+tool_buttons.append(ToolButton(860,395,50,50,"img\\randommouse.png","Random",lambda: solve_algorithm_fun("RMA")))
+# Dead-End Fill Algorithm Button
+tool_buttons.append(ToolButton(920,395,50,50,"img\\deadendfill.png","DeadEnd-Fill",demo_fun))
 
 # Row - 6
-# Demo Tool Button
-tool_buttons.append(ToolButton(860,455,50,50,"img\\undo.png","Demo",demo_fun))
-# Demo Tool Button
-tool_buttons.append(ToolButton(920,455,50,50,"img\\undo.png","Demo",demo_fun))
+# Left-Hand Follower Algorithm Button
+tool_buttons.append(ToolButton(860,455,50,50,"img\\lefthand.png","Left Hand",demo_fun))
+# Right-Hand Follower Algorithm Button
+tool_buttons.append(ToolButton(920,455,50,50,"img\\righthand.png","Right Hand",demo_fun))
 
 # Row - 7
-# Demo Tool Button
-tool_buttons.append(ToolButton(860,515,50,50,"img\\undo.png","Demo",demo_fun))
-# Demo Tool Button
-tool_buttons.append(ToolButton(920,515,50,50,"img\\undo.png","Demo",demo_fun))
+# A-star Algorithm Button
+tool_buttons.append(ToolButton(860,515,50,50,"img\\astar.png","A Star",demo_fun))
+# Dijkstra Algorithm Button
+tool_buttons.append(ToolButton(920,515,50,50,"img\\dijkstra.png","Dijkstra",demo_fun))
 
 def draw_win(sc: pygame.Surface):
     # For Background Color

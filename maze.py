@@ -78,11 +78,14 @@ class Grid:
         self.cell_grid = [[Cell(col, row) for col in range(self.cols)] for row in range(self.rows)]
         self.pointer_grid = [[Pointer(col, row) for col in range(self.cols)] for row in range(self.rows)]
 
-        # Solving Algorithm Attributes
+        # Solving Algorithm By-Default Variables
         self.current_pointer = self.pointer_grid[0][0]
         self.path_stack = []
-        self.next_pointers = None
         self.next_direction = None
+        self.start_point = self.pointer_grid[0][0]
+        self.end_point = self.pointer_grid[self.rows-1][self.cols-1]
+
+        # Solving Algorithm Attributes
         self.solve_algorithm = None
         self.solve_algo_is_running = False
         self.is_maze_Solved = False
@@ -102,7 +105,6 @@ class Grid:
 
         self.current_pointer = self.pointer_grid[0][0]
         self.path_stack = []
-        self.next_pointers = None
         self.next_direction = None
         self.solve_algorithm = None
         self.solve_algo_is_running = False
@@ -110,7 +112,7 @@ class Grid:
 
     def handle_events(self, event: pygame.event.Event):
 
-        if self.is_maze_Generated:
+        if ((self.is_maze_Generated) and (self.solve_algorithm is None) and (not self.is_maze_Solved)):
 
             # KeyBoard Key to Move Maze Pointer (Manual Solve)
             if event.type == pygame.KEYDOWN:
@@ -138,7 +140,7 @@ class Grid:
                 x, y = self.start_x + cell.column * self.tile, self.start_y + cell.row * self.tile
                 cell.draw(sc, x, y, self.tile, self.grid_line_color, self.grid_line_width)
 
-        # For Current Cell Drawing
+        # For Current Cell Drawing and Algorithm Function Call
         if self.gen_algo_is_running:
             x, y = self.start_x + self.current_cell.column * self.tile, self.start_y + self.current_cell.row * self.tile
             self.current_cell.draw_current_cell(sc, x, y, self.tile, self.padding)
@@ -148,7 +150,7 @@ class Grid:
                 self.gen_algorithm = None
                 self.is_maze_Generated = True
 
-        # For Generation Completed (Manual Solve)
+        # For Generation Completed (Manual Solve & Algorithms)
         elif self.is_maze_Generated:
 
             # For Path Drawing out of Pointers which are visited
@@ -158,11 +160,11 @@ class Grid:
                     y = self.start_y + (pointer.row * self.tile)+(self.rect_width)
 
                     # For Start Point
-                    if (pointer.column == 0 and pointer.row == 0):
+                    if (pointer == self.start_point):
                         pointer.draw_special_pointer(sc, x, y, (self.tile//3), (200, 0, 0))
 
                     # For End Point
-                    elif (pointer.column == (self.cols-1) and pointer.row == (self.rows-1)):
+                    elif (pointer == self.end_point):
                         pointer.draw_special_pointer(sc, x, y, (self.tile//3), (0, 200, 0))
 
                     if pointer.visited:
@@ -170,35 +172,61 @@ class Grid:
                         line_color = (3, 211, 252) if pointer.in_path else (255, 255, 255)
                         pointer.draw(sc, x, y, self.radius, line_color, self.rect_width)
 
-            # For Current Pointer Drawing
-            x = self.start_x + (self.current_pointer.column * self.tile)+(self.rect_width)
-            y = self.start_y + (self.current_pointer.row * self.tile)+(self.rect_width)
-            
-            self.current_pointer.draw_current_pointer(sc, x, y, self.radius)
+                        # For Current Pointer Drawing
+                        if pointer == self.current_pointer:
+                            self.current_pointer.draw_current_pointer(sc, x, y, self.radius)
 
-            # For Maze State Update Logic
-            self.current_pointer.visited = True
-            self.current_pointer.in_path = True
-            self.next_pointers = self.check_neighbor_pointers(self.current_pointer.column, self.current_pointer.row)
+            # For Maze State Update Logic (Manual)
+            if ((self.solve_algorithm is None) and (not self.is_maze_Solved)):
+                # Win Condition Check
+                if (self.current_pointer == self.end_point):
+                    self.is_maze_Solved = True
+                    self.solve_algorithm = None
+                    self.solve_algo_is_running = False
+                    print("Maze Solved.")
 
-            if self.next_direction:
-                next_point = self.next_pointers.get(self.next_direction)
-                if next_point and (next_point not in self.path_stack):
+                self.manual_solve_algorithm()
 
-                    self.path_stack.append(self.current_pointer)
+            # For Maze State Update Logic (Algorithm)
+            elif self.solve_algo_is_running:
 
-                    self.make_wall(self.current_pointer.column, self.current_pointer.row, next_point.column, next_point.row)
-                    
-                    self.current_pointer.in_path = True
+                # Win Condition Check
+                if (self.current_pointer == self.end_point):
+                    # Make Last Cell visited True
+                    self.end_point.visited = True
+                    self.end_point.in_path = True
 
-                    self.current_pointer = next_point
+                    self.is_maze_Solved = True
+                    self.solve_algorithm = None
+                    self.solve_algo_is_running = False
+                    print("Maze Solved.")
 
-                elif self.path_stack and (next_point in self.path_stack):
+                else:
+                    self.solve_algo_is_running = self.solve_algorithm(self)
 
-                    self.current_pointer.in_path = False
-                    self.current_pointer = self.path_stack.pop()
+    def manual_solve_algorithm(self):
 
-                self.next_direction = None
+        self.current_pointer.visited = True
+        self.current_pointer.in_path = True
+
+        next_pointers = self.check_neighbor_pointers(self.current_pointer.column, self.current_pointer.row)
+
+        if self.next_direction:
+            next_point = next_pointers.get(self.next_direction)
+            if next_point and (next_point not in self.path_stack):
+
+                self.path_stack.append(self.current_pointer)
+
+                self.make_wall(self.current_pointer.column, self.current_pointer.row, next_point.column, next_point.row)
+
+                self.current_pointer = next_point
+
+            elif self.path_stack and (next_point in self.path_stack):
+
+                self.current_pointer.in_path = False
+                self.current_pointer = self.path_stack.pop()
+
+            self.next_direction = None
 
     # Check Cell Exist in Grid or Not (Generation Algorithm)
     def check_cell(self, x, y):
