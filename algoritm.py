@@ -105,12 +105,109 @@ def dead_end_fill(maze_grid: Grid):
     pass
 
 # Right Hand (Hand Follower) Algorithm
+side_tuple = ("top","right","bottom","left")
+
 def right_hand_follower(maze_grid: Grid):
-    pass
+    # Initialize Direction to "left" By-Default from None
+    if maze_grid.next_direction is None:
+        maze_grid.next_direction = "left"
+
+    maze_grid.current_pointer.visited = True
+    maze_grid.current_pointer.in_path = True
+
+    next_pointers = maze_grid.check_neighbor_pointers(maze_grid.current_pointer.column, maze_grid.current_pointer.row)
+
+    # Right Hand Follower Algorithm Core
+    index = side_tuple.index(maze_grid.next_direction)
+    right = side_tuple[(index + 1) % 4]
+    left = side_tuple[(index - 1) % 4]
+
+    next_point = None
+
+    # Check wall on left
+    if next_pointers.get(right):
+        maze_grid.next_direction = right                             # Turn right
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+
+    # Check wall in front
+    elif next_pointers.get(maze_grid.next_direction):
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+
+    else:
+        maze_grid.next_direction = left                            # Turn left
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+    
+    # Back-Track Logic
+    if (next_point and (next_point not in maze_grid.path_stack)):
+
+        maze_grid.path_stack.append(maze_grid.current_pointer)
+
+        maze_grid.make_wall(maze_grid.current_pointer.column, maze_grid.current_pointer.row, next_point.column, next_point.row)
+
+        maze_grid.current_pointer = next_point
+
+        return True
+
+    elif (maze_grid.path_stack and (next_point in maze_grid.path_stack)):
+
+        maze_grid.current_pointer.in_path = False
+        maze_grid.current_pointer = maze_grid.path_stack.pop()
+
+        return True
+
+    return True
 
 # Left Hand (Hand Follower) Algorithm
 def left_hand_follower(maze_grid: Grid):
-    pass
+
+    # Initialize Direction to "right" By-Default from None
+    if maze_grid.next_direction is None:
+        maze_grid.next_direction = "right"
+
+    maze_grid.current_pointer.visited = True
+    maze_grid.current_pointer.in_path = True
+
+    next_pointers = maze_grid.check_neighbor_pointers(maze_grid.current_pointer.column, maze_grid.current_pointer.row)
+
+    # Left Hand Follower Algorithm Core
+    index = side_tuple.index(maze_grid.next_direction)
+    right = side_tuple[(index + 1) % 4]
+    left = side_tuple[(index - 1) % 4]
+
+    next_point = None
+
+    # Check wall on left
+    if next_pointers.get(left):
+        maze_grid.next_direction = left                             # Turn left
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+
+    # Check wall in front
+    elif next_pointers.get(maze_grid.next_direction):
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+
+    else:
+        maze_grid.next_direction = right                            # Turn right
+        next_point = next_pointers.get(maze_grid.next_direction)    # Move forward
+    
+    # Back-Track Logic
+    if (next_point and (next_point not in maze_grid.path_stack)):
+
+        maze_grid.path_stack.append(maze_grid.current_pointer)
+
+        maze_grid.make_wall(maze_grid.current_pointer.column, maze_grid.current_pointer.row, next_point.column, next_point.row)
+
+        maze_grid.current_pointer = next_point
+
+        return True
+
+    elif (maze_grid.path_stack and (next_point in maze_grid.path_stack)):
+
+        maze_grid.current_pointer.in_path = False
+        maze_grid.current_pointer = maze_grid.path_stack.pop()
+
+        return True
+
+    return True
 
 # A star Algorithm
 def a_star(maze_grid: Grid):

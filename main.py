@@ -56,8 +56,8 @@ gen_algorithm_map = {
 solve_algorithm_map = {
     "RMA": random_mouse,            # Random Mouse
     "DEF": dead_end_fill,           # Dead-End Fill
-    "RHF": right_hand_follower,     # Right-Hand Follower
     "LHF": left_hand_follower,      # Left-Hand Follower
+    "RHF": right_hand_follower,     # Right-Hand Follower
     "AS": a_star,                   # A Star
     "DA": dijkstra                  # Dijkstra
 }
@@ -194,9 +194,9 @@ tool_buttons.append(ToolButton(920,395,50,50,"img\\deadendfill.png","DeadEnd-Fil
 
 # Row - 6
 # Left-Hand Follower Algorithm Button
-tool_buttons.append(ToolButton(860,455,50,50,"img\\lefthand.png","Left Hand",demo_fun))
+tool_buttons.append(ToolButton(860,455,50,50,"img\\lefthand.png","Left Hand",lambda: solve_algorithm_fun("LHF")))
 # Right-Hand Follower Algorithm Button
-tool_buttons.append(ToolButton(920,455,50,50,"img\\righthand.png","Right Hand",demo_fun))
+tool_buttons.append(ToolButton(920,455,50,50,"img\\righthand.png","Right Hand",lambda: solve_algorithm_fun("RHF")))
 
 # Row - 7
 # A-star Algorithm Button
