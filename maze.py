@@ -106,6 +106,9 @@ class Grid:
         self.current_pointer = self.pointer_grid[0][0]
         self.path_stack = []
         self.next_direction = None
+        self.start_point = self.pointer_grid[0][0]
+        self.end_point = self.pointer_grid[self.rows-1][self.cols-1]
+
         self.solve_algorithm = None
         self.solve_algo_is_running = False
         self.is_maze_Solved = False

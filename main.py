@@ -90,6 +90,7 @@ def solve_algorithm_fun(algorithm_name):
     global grid_obj
 
     if grid_obj.is_maze_Generated:
+        reset_fun()
         grid_obj.solve_algo_is_running = True
         grid_obj.solve_algorithm = solve_algorithm_map.get(algorithm_name)
 

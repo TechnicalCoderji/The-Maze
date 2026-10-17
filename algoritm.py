@@ -1,4 +1,4 @@
-from random import choice
+from random import choice, sample
 from maze import Grid
 
 # --------------- Maze Generation Algorithm ---------------
@@ -51,8 +51,8 @@ def hunt_and_kill(maze_grid: Grid):
         return True
 
     else:
-        for row in maze_grid.cell_grid:
-            for cell in row:
+        for row in sample(maze_grid.cell_grid, maze_grid.rows):
+            for cell in sample(row, maze_grid.cols):
                 if not cell.visited:
                     continue
 
