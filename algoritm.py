@@ -1,5 +1,7 @@
 from random import choice, sample
-from maze import Grid
+import heapq
+from itertools import count
+from maze import Grid, Pointer
 
 # --------------- Maze Generation Algorithm ---------------
 
@@ -258,8 +260,123 @@ def left_hand_follower(maze_grid: Grid):
     return True
 
 # A star Algorithm
-def a_star(maze_grid: Grid):
-    pass
+actual_costs = []           # Actual cost from the start cell to the current cell
+estimated_costs = []        # Estimated cost from the current cell to the goal (heuristic)
+parent_cells = []           # For Path Making
+open_path = []              # Priority Queue
+closed_path = set()         # Empty Set
+counter = count()           # Set New Counter
+
+# Helper Funtion For A-star (Manhattan_distance - heuristic)
+def manhatten_distance(start: Pointer, goal: Pointer):
+    distance = abs(start.column - goal.column) + abs(start.row - goal.row)
+    return distance
+
+# For Getting Estimated Cost
+def get_ecost(point: Pointer):
+    cost = estimated_costs[point.row][point.column]
+    return cost
+
+# For Setting Estimated Cost
+def set_ecost(point: Pointer, cost: int):
+    global estimated_costs
+    estimated_costs[point.row][point.column] = cost
+
+# For Getting Actual Cost
+def get_acost(point: Pointer):
+    cost = actual_costs[point.row][point.column]
+    return cost
+
+# For Setting Actual Cost
+def set_acost(point: Pointer, cost: int):
+    global actual_costs
+    actual_costs[point.row][point.column] = cost
+
+# For Getting Parent Cell
+def get_pcell(point: Pointer):
+    parent = parent_cells[point.row][point.column]
+    return parent
+
+# For Setting Parent Cell
+def set_pcell(point: Pointer, parent: Pointer):
+    global parent_cells
+    parent_cells[point.row][point.column] = parent
+
+# Initializer Funtion For A-star
+def make_score_grid(mg: Grid):
+
+    global actual_costs, estimated_costs, parent_cells, open_path, counter
+
+    # Reset Counter
+    counter = count()
+
+    # Set All Actual and Estimated cost to Infinity
+    actual_costs = [[float("inf") for _ in range(mg.cols)] for _ in range(mg.rows)]
+    estimated_costs = [[float("inf") for _ in range(mg.cols)] for _ in range(mg.rows)]
+
+    # Set All Parents to None
+    parent_cells = [[None for _ in range(mg.cols)] for _ in range(mg.rows)]
+
+    # Initialize Values for Start cell
+    set_acost(mg.start_point, 0)
+    set_ecost(mg.start_point, manhatten_distance(mg.start_point, mg.end_point))
+
+    heapq.heappush(open_path, (get_ecost(mg.start_point), next(counter), mg.start_point))
+
+# For High-Light main Path
+def ReconstructPath(mg: Grid):
+    global parent_cells
+
+    while (mg.current_pointer):
+        mg.current_pointer.in_path = True
+        mg.current_pointer = get_pcell(mg.current_pointer)
+
+def a_star(mg: Grid):
+    
+    global actual_costs, estimated_costs, parent_cells, open_path, closed_path
+
+    while open_path:
+
+        # lowest Estimated Distance Selected as Current from open path queue
+        mg.current_pointer = heapq.heappop(open_path)[2]
+
+        mg.current_pointer.visited = True
+
+        # Win Condition
+        if mg.current_pointer == mg.end_point:
+            ReconstructPath(mg)
+            mg.is_maze_Solved = True
+            mg.solve_algorithm = None
+            print("Maze Solved.")
+            return False
+
+        # Add Current to closed
+        closed_path.add(mg.current_pointer)
+
+        # Get Possible Neighbors
+        neighbor_pointers = mg.check_neighbor_pointers(mg.current_pointer.column, mg.current_pointer.row)
+
+        for neighbor in neighbor_pointers.values():
+
+            # Skip if in Closed Path
+            if neighbor in closed_path:
+                continue
+
+            temp_cost = get_acost(mg.current_pointer) + 1           # Temprary Estimated Cost
+
+            if (temp_cost < get_acost(neighbor)):
+
+                set_pcell(neighbor, mg.current_pointer)
+                set_acost(neighbor, temp_cost)
+                set_ecost(neighbor, (get_acost(neighbor) + manhatten_distance(neighbor, mg.end_point)))
+
+                mg.make_wall(mg.current_pointer.column, mg.current_pointer.row, neighbor.column, neighbor.row)
+
+                heapq.heappush(open_path, (get_ecost(neighbor), next(counter), neighbor))
+
+        return True
+
+    return False
 
 # Dijkstra Algorithm
 def dijkstra(maze_grid: Grid):

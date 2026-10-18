@@ -8,7 +8,7 @@ from algoritm import depth_first_search, hunt_and_kill
 # Import Maze Solver Algorithm
 from algoritm import random_mouse, dead_end_fill, right_hand_follower, left_hand_follower, a_star, dijkstra
 # Import Helper Function for Maze Solver Algorithm
-from algoritm import explore_maze
+from algoritm import explore_maze, make_score_grid
 
 pygame.init()
 
@@ -97,6 +97,10 @@ def solve_algorithm_fun(algorithm_name):
         if (algorithm_name == "DEF"):
             # Make All Pointer Visited and in_path
             explore_maze(grid_obj)
+
+        elif (algorithm_name == "AS"):
+            # Calculate and Store Score for each cell
+            make_score_grid(grid_obj)
 
         grid_obj.solve_algorithm = solve_algorithm_map.get(algorithm_name)
 
@@ -205,9 +209,9 @@ tool_buttons.append(ToolButton(920,455,50,50,"img\\righthand.png","Right Hand",l
 
 # Row - 7
 # A-star Algorithm Button
-tool_buttons.append(ToolButton(860,515,50,50,"img\\astar.png","A Star",demo_fun))
+tool_buttons.append(ToolButton(860,515,50,50,"img\\astar.png","A Star",lambda: solve_algorithm_fun("AS")))
 # Dijkstra Algorithm Button
-tool_buttons.append(ToolButton(920,515,50,50,"img\\dijkstra.png","Dijkstra",demo_fun))
+tool_buttons.append(ToolButton(920,515,50,50,"img\\dijkstra.png","Dijkstra",lambda: solve_algorithm_fun("DA")))
 
 def draw_win(sc: pygame.Surface):
     # For Background Color
