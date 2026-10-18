@@ -335,3 +335,24 @@ class Grid:
         elif dy == -1:
             self.pointer_grid[current_y][current_x].connects["bottom"] = True
             self.pointer_grid[next_y][next_x].connects["top"] = True
+
+    # For movement of pointer (For Dead-End Fill)
+    def remove_pointer_wall(self, current_x, current_y, next_x, next_y):
+
+        dx = current_x - next_x
+
+        if dx == 1:
+            self.pointer_grid[current_y][current_x].connects["left"] = False
+            self.pointer_grid[next_y][next_x].connects["right"] = False
+        elif dx == -1:
+            self.pointer_grid[current_y][current_x].connects["right"] = False
+            self.pointer_grid[next_y][next_x].connects["left"] = False
+
+        dy = current_y - next_y
+        
+        if dy == 1:
+            self.pointer_grid[current_y][current_x].connects["top"] = False
+            self.pointer_grid[next_y][next_x].connects["bottom"] = False
+        elif dy == -1:
+            self.pointer_grid[current_y][current_x].connects["bottom"] = False
+            self.pointer_grid[next_y][next_x].connects["top"] = False

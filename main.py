@@ -7,6 +7,8 @@ import saver_loader as SL
 from algoritm import depth_first_search, hunt_and_kill
 # Import Maze Solver Algorithm
 from algoritm import random_mouse, dead_end_fill, right_hand_follower, left_hand_follower, a_star, dijkstra
+# Import Helper Function for Maze Solver Algorithm
+from algoritm import explore_maze
 
 pygame.init()
 
@@ -72,8 +74,7 @@ def open_menu_fun():
 
 def delete_fun():
     global grid_obj
-    grid_obj.gen_algo_is_running = False
-    grid_obj.is_maze_Generated = False
+    print("Delete Function Called")
     grid_obj = Grid(25, 25, 800, 550, Tile_Size, MAZE_Box_Border_Color)
 
 # For Reset Solved Path by Solving Algoritm also Stop Solving Algorithm
@@ -92,6 +93,11 @@ def solve_algorithm_fun(algorithm_name):
     if grid_obj.is_maze_Generated:
         reset_fun()
         grid_obj.solve_algo_is_running = True
+
+        if (algorithm_name == "DEF"):
+            # Make All Pointer Visited and in_path
+            explore_maze(grid_obj)
+
         grid_obj.solve_algorithm = solve_algorithm_map.get(algorithm_name)
 
     else:
@@ -146,9 +152,8 @@ def save_fun():
 def open_fun():
     global save_load_screen
     delete_fun()
-    SL.load_sudoku(filelist_box.selected_file, grid_obj)
+    grid_obj.is_maze_Generated = SL.load_sudoku(filelist_box.selected_file, grid_obj)
     save_load_screen = None
-    grid_obj.is_maze_Generated = True
 
 # For Load
 close_button_1 = ToolButton(600,105,40,40,"img\\close.png","Close",close_fun)
@@ -190,7 +195,7 @@ tool_buttons.append(ToolButton(920,290,50,50,"img\\huntandkill.png","Hunt & Kill
 # Random Mouse Algorithm Button
 tool_buttons.append(ToolButton(860,395,50,50,"img\\randommouse.png","Random",lambda: solve_algorithm_fun("RMA")))
 # Dead-End Fill Algorithm Button
-tool_buttons.append(ToolButton(920,395,50,50,"img\\deadendfill.png","DeadEnd-Fill",demo_fun))
+tool_buttons.append(ToolButton(920,395,50,50,"img\\deadendfill.png","DeadEnd-Fill",lambda: solve_algorithm_fun("DEF")))
 
 # Row - 6
 # Left-Hand Follower Algorithm Button

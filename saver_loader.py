@@ -56,7 +56,7 @@ def load_sudoku(file_name, maze_grid):
     # Add Validation For Row and Column Compatable with Maze Grid
     if not (rows == maze_grid.rows and cols == maze_grid.cols):
         print("Error: Grid Size Not Compatable.")
-        return
+        return False
 
     grid_bitmask = maze_data["grid"]
 
@@ -77,6 +77,8 @@ def load_sudoku(file_name, maze_grid):
 
             maze_grid.cell_grid[y][x].walls = walls
             maze_grid.cell_grid[y][x].visited = True  # Mark the cell as visited after loading
+
+    return True
 
 if __name__=="__main__":
     pass

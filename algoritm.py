@@ -65,7 +65,7 @@ def hunt_and_kill(maze_grid: Grid):
         
         return False
 
-# --------------- Maze Generation Algorithm ---------------
+# --------------- Maze Solving Algorithm ---------------
 
 # Random Mouse Algorithm
 def random_mouse(maze_grid: Grid):
@@ -101,8 +101,56 @@ def random_mouse(maze_grid: Grid):
     return False
 
 # Dead-End Fill Algorithm
+
+# Make All Pointer Visited and in_path (Helper Function)
+def explore_maze(maze_grid: Grid):
+
+    for row in maze_grid.pointer_grid:
+        for pointer in row:
+            pointer.visited = True
+            # pointer.in_path = True
+
+            neighbor_pointers = maze_grid.check_neighbor_pointers(pointer.column, pointer.row)
+            for neighbor_point in neighbor_pointers.values():
+                maze_grid.make_wall(pointer.column, pointer.row, neighbor_point.column, neighbor_point.row)
+
 def dead_end_fill(maze_grid: Grid):
-    pass
+
+    # Find Dead-End and Fill
+    for row in maze_grid.pointer_grid:
+        for pointer in row:
+            # Skip if Point is Start Point or End Point
+            if (pointer in (maze_grid.start_point, maze_grid.end_point)):
+                continue # Not Count as Dead-End
+
+            # Skip if Point It-self is Dead-End
+            if (not pointer.visited):
+                continue # Already Dead-End
+
+            # Logic For Check Wheather it is Dead-End or Not
+            # Pointer Dictinary where not wall
+            neighbor_pointers =  maze_grid.check_neighbor_pointers(pointer.column, pointer.row)
+
+            unique_neighbor_pointers = [] # Also Checked Wheather Visited or Not
+            for neighbor in neighbor_pointers.values():
+                if (neighbor.visited == True):
+                    unique_neighbor_pointers.append(neighbor)
+
+            # For Dead-End Condition
+            if len(unique_neighbor_pointers) == 1:
+
+                # Fill The Dead-End
+                pointer.visited = False
+                maze_grid.remove_pointer_wall(pointer.column, pointer.row, unique_neighbor_pointers[0].column, unique_neighbor_pointers[0].row)
+                return True
+
+    print("All Dead End Are Filled.")
+    maze_grid.is_maze_Solved = True
+    maze_grid.solve_algorithm = None
+    maze_grid.solve_algo_is_running = False
+    print("Maze Solved.")
+    return False
+
 
 # Right Hand (Hand Follower) Algorithm
 side_tuple = ("top","right","bottom","left")
