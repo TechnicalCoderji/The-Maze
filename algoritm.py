@@ -303,12 +303,13 @@ def set_pcell(point: Pointer, parent: Pointer):
     parent_cells[point.row][point.column] = parent
 
 # Initializer Funtion For A-star
-def make_score_grid(mg: Grid):
+def initialize_a_star(mg: Grid):
 
     global actual_costs, estimated_costs, parent_cells, open_path, counter
 
-    # Reset Counter
+    # Reset Counter and Open Path
     counter = count()
+    open_path = []
 
     # Set All Actual and Estimated cost to Infinity
     actual_costs = [[float("inf") for _ in range(mg.cols)] for _ in range(mg.rows)]
@@ -330,6 +331,12 @@ def ReconstructPath(mg: Grid):
     while (mg.current_pointer):
         mg.current_pointer.in_path = True
         mg.current_pointer = get_pcell(mg.current_pointer)
+        return True
+    
+    mg.is_maze_Solved = True
+    mg.solve_algorithm = None
+    print("Maze Path Solved.")
+    return False
 
 def a_star(mg: Grid):
     
@@ -344,11 +351,10 @@ def a_star(mg: Grid):
 
         # Win Condition
         if mg.current_pointer == mg.end_point:
-            ReconstructPath(mg)
-            mg.is_maze_Solved = True
-            mg.solve_algorithm = None
             print("Maze Solved.")
-            return False
+            mg.solve_algorithm = ReconstructPath
+            ReconstructPath(mg)
+            return True
 
         # Add Current to closed
         closed_path.add(mg.current_pointer)
@@ -379,5 +385,73 @@ def a_star(mg: Grid):
     return False
 
 # Dijkstra Algorithm
-def dijkstra(maze_grid: Grid):
-    pass
+
+
+# Initializer Funtion For Dijkstra Algorithm
+def initialize_dijkstra(mg: Grid):
+
+    global open_path, actual_costs, parent_cells, counter
+
+    # Reset Open Path and Counter
+    counter = count()
+    open_path = []
+
+    # Set All Actual cost to Infinity
+    actual_costs = [[float("inf") for _ in range(mg.cols)] for _ in range(mg.rows)]
+
+    # Set All Parents to None
+    parent_cells = [[None for _ in range(mg.cols)] for _ in range(mg.rows)]
+
+    # Set Distance of Start (We use Distance as Actual Costs)
+    set_acost(mg.start_point, 0)
+
+    # Push First Point to Priority Queue
+    heapq.heappush(open_path, (get_acost(mg.start_point), next(counter), mg.start_point))
+
+
+def dijkstra_algorithm(mg: Grid):
+
+    global open_path, actual_costs, parent_cells, counter
+
+    while open_path:
+
+        # Remove Element with Smallest distance from open_path
+        current_distance, _, mg.current_pointer = heapq.heappop(open_path)
+
+        # Skip Pointer which is Already Visited
+        if mg.current_pointer.visited:
+            continue
+
+        mg.current_pointer.visited = True
+
+        # Win Condition
+        if mg.current_pointer == mg.end_point:
+            print("Maze Solved.")
+            mg.solve_algorithm = ReconstructPath
+            ReconstructPath(mg) # Same of A* and Dijkstra's Algorithm
+            return True
+
+        # Get Possible Neighbors
+        neighbor_pointers = mg.check_neighbor_pointers(mg.current_pointer.column, mg.current_pointer.row)
+
+        for neighbor in neighbor_pointers.values():
+
+            # Skip Neighbor which is Already visited
+            if neighbor.visited:
+                continue
+
+            # New Cell/Pointer Distance from Start
+            new_distance = get_acost(mg.current_pointer) + 1
+
+            if (new_distance < get_acost(neighbor)):
+
+                set_acost(neighbor, new_distance)
+                set_pcell(neighbor, mg.current_pointer)
+
+                mg.make_wall(mg.current_pointer.column, mg.current_pointer.row, neighbor.column, neighbor.row)
+
+                heapq.heappush(open_path, (new_distance, next(counter), neighbor))
+
+        return True
+
+    return False

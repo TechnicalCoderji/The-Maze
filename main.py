@@ -6,9 +6,9 @@ import saver_loader as SL
 # Import Maze Generation Algorithm
 from algoritm import depth_first_search, hunt_and_kill
 # Import Maze Solver Algorithm
-from algoritm import random_mouse, dead_end_fill, right_hand_follower, left_hand_follower, a_star, dijkstra
+from algoritm import random_mouse, dead_end_fill, right_hand_follower, left_hand_follower, a_star, dijkstra_algorithm
 # Import Helper Function for Maze Solver Algorithm
-from algoritm import explore_maze, make_score_grid
+from algoritm import explore_maze, initialize_a_star, initialize_dijkstra
 
 pygame.init()
 
@@ -61,7 +61,7 @@ solve_algorithm_map = {
     "LHF": left_hand_follower,      # Left-Hand Follower
     "RHF": right_hand_follower,     # Right-Hand Follower
     "AS": a_star,                   # A Star
-    "DA": dijkstra                  # Dijkstra
+    "DA": dijkstra_algorithm        # Dijkstra
 }
 
 def save_menu_fun():
@@ -100,7 +100,11 @@ def solve_algorithm_fun(algorithm_name):
 
         elif (algorithm_name == "AS"):
             # Calculate and Store Score for each cell
-            make_score_grid(grid_obj)
+            initialize_a_star(grid_obj)
+
+        elif (algorithm_name == "DA"):
+            # Calculate and Store Distance for each cell
+            initialize_dijkstra(grid_obj)
 
         grid_obj.solve_algorithm = solve_algorithm_map.get(algorithm_name)
 
