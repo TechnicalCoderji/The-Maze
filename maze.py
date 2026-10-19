@@ -1,5 +1,8 @@
+# This module is for Seperate maze related pygame and algorithm implementation logic from main code
+
 import pygame
 
+# Represent Individual cell
 class Cell:
     def __init__(self, column, row):
         self.column = column
@@ -28,6 +31,7 @@ class Cell:
 
         pygame.draw.rect(sc, pygame.Color('#f70067'),(x + padding, y + padding, tile_size - (2*padding), tile_size - (2*padding)),border_radius=20)
 
+# Represent Our Position on Maze(Poining to cell)
 class Pointer:
 
     def __init__(self, column, row):
@@ -58,6 +62,7 @@ class Pointer:
 
         pygame.draw.circle(sc, color, (x,y), radius)
 
+# Combine Cell and Pointer for maze pygame UI drawing and algorithm logic
 class Grid:
     def __init__(self, start_x, start_y, width, height, tile_size, line_color):
         self.start_x = start_x

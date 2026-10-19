@@ -1,7 +1,9 @@
+# this module is utility module for pygame Custom UI classes and functions 
+
 import pygame
 import os
 
-pygame.init()
+pygame.init()       # Initialize pygame basic componets
 
 # Font Variables
 font_24 = pygame.font.Font(None, 24)
